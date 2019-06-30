@@ -49,7 +49,6 @@ class _TimerCountDownState extends State<TimerCountDown>
 
   @override
   Widget build(BuildContext context) {
-    ThemeData themeData = Theme.of(context);
     return WillPopScope(
         onWillPop: () async =>
             timerIsOn ? await showWarningOnTimerRunning() : true,
@@ -72,7 +71,8 @@ class _TimerCountDownState extends State<TimerCountDown>
                                   alignment: FractionalOffset.center,
                                   child: AspectRatio(
                                       aspectRatio: 1.0,
-                                      child: GestureDetector(
+                                      child: InkWell(
+                                        borderRadius: BorderRadius.all(Radius.circular(200)),
                                           onTap: () {
                                             if (timerIsPaused) {
                                               timer = startTimer();
@@ -119,9 +119,11 @@ class _TimerCountDownState extends State<TimerCountDown>
                                                             children: <Widget>[
                                                               Text(
                                                                 timeLeft,
-                                                                style: themeData
-                                                                    .textTheme
-                                                                    .display4,
+                                                                style: TextStyle(
+                                                                    fontSize: 90,
+                                                                    color:  Colors.black54,
+                                                                    fontWeight: FontWeight.w300
+                                                                )
                                                               ),
                                                               !timerIsPaused
                                                                   ? Text(
@@ -135,10 +137,8 @@ class _TimerCountDownState extends State<TimerCountDown>
                                                                       ? Text(
                                                                           'PAUSED',
                                                                           style: TextStyle(
-                                                                              color: Colors
-                                                                                  .grey,
-                                                                              fontSize:
-                                                                                  18.0))
+                                                                              color: Colors.grey,
+                                                                              fontSize: 18.0))
                                                                       : Text(
                                                                           'STOPPED',
                                                                           style: TextStyle(
@@ -204,7 +204,7 @@ class _TimerCountDownState extends State<TimerCountDown>
 
   startTimer() {
     if (timerPausedValue == null)
-      Future.delayed(Duration(milliseconds: 50)).then((context) {
+      Future.delayed(Duration(milliseconds: 150)).then((context) {
         showSnackBar(
             widget.timerValue.inHours != 0
                 ? 'Timer set for ${widget.timerValue.inHours} hours, ${widget.timerValue.inMinutes % 60} minutes'
@@ -332,7 +332,7 @@ class _TimerCountDownState extends State<TimerCountDown>
                     new FlatButton(
                         onPressed: () =>
                             {answer = true, Navigator.of(context).pop()},
-                        child: new Text('Yes')),
+                        child: new Text('Okay')),
                     new FlatButton(
                         onPressed: () =>
                             {answer = false, Navigator.of(context).pop()},
