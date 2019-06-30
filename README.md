@@ -1,2 +1,2 @@
-# Timer App
+# Timer
 Simple timer app built on Flutter. 
