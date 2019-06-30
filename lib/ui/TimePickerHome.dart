@@ -68,8 +68,8 @@ class TimePickerState extends State<TimePicker> with TickerProviderStateMixin {
         ),
         body: AnimatedOpacity(
           opacity: pageOpacity,
-          duration: Duration(milliseconds: 1250),
-          curve: Curves.easeIn,
+          duration: Duration(milliseconds: 650),
+          curve: Curves.easeInQuad,
           child: Padding(
             padding: EdgeInsets.all(12.0),
             child: Column(
