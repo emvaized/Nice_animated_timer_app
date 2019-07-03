@@ -56,144 +56,140 @@ class _TimerCountDownState extends State<TimerCountDown>
             appBar: AppBar(),
             body: Builder(builder: (BuildContext context) {
               scaffoldContext = context;
-              return Stack(
-                children: <Widget>[
-                  Hero(
-                      transitionOnUserGestures: true,
-                      tag: 'showTimer',
-                      child: Container()),
-                  Padding(
-                      padding: EdgeInsets.all(15.0),
-                      child: Column(
-                        children: <Widget>[
-                          Expanded(
-                              child: Align(
-                                  alignment: FractionalOffset.center,
-                                  child: AspectRatio(
-                                      aspectRatio: 1.0,
-                                      child: InkWell(
-                                        borderRadius: BorderRadius.all(Radius.circular(200)),
-                                          onTap: () {
-                                            if (timerIsPaused) {
-                                              timer = startTimer();
-                                            } else {
-                                              pauseTimer();
-                                            }
-                                          },
-                                          child: Stack(
-                                            children: <Widget>[
-                                              Positioned.fill(
-                                                child: AnimatedBuilder(
-                                                  animation: controller,
-                                                  builder:
-                                                      (BuildContext context,
-                                                          Widget child) {
-                                                    return CustomPaint(
-                                                        painter: TimerPainter(
-                                                      animation: controller,
-                                                      backgroundColor:
-                                                          Colors.grey,
-                                                      color: timerIsPaused
-                                                          ? Colors.black45
-                                                          : Colors.blue,
-                                                    ));
-                                                  },
-                                                ),
-                                              ),
-                                              Align(
-                                                alignment:
-                                                    FractionalOffset.center,
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: <Widget>[
-                                                    AnimatedBuilder(
-                                                        animation: controller,
-                                                        builder: (BuildContext
-                                                                context,
+              return Padding(
+                  padding: EdgeInsets.all(15.0),
+                  child: Column(
+                    children: <Widget>[
+                      Expanded(
+                          child: Align(
+                              alignment: FractionalOffset.center,
+                              child: AspectRatio(
+                                  aspectRatio: 1.0,
+                                  child: InkWell(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(200)),
+                                      onTap: () {
+                                        if (timerIsPaused) {
+                                          timer = startTimer();
+                                        } else {
+                                          pauseTimer();
+                                        }
+                                      },
+                                      child: Stack(
+                                        children: <Widget>[
+                                          Positioned.fill(
+                                              child: Hero(
+                                                  tag: 'showTimer',
+                                                  child: AnimatedBuilder(
+                                                    animation: controller,
+                                                    builder:
+                                                        (BuildContext context,
                                                             Widget child) {
-                                                          return Column(
-                                                            children: <Widget>[
-                                                              Text(
-                                                                timeLeft,
-                                                                style: TextStyle(
-                                                                    fontSize: 90,
-                                                                    color:  Colors.black54,
-                                                                    fontWeight: FontWeight.w300
-                                                                )
-                                                              ),
-                                                              !timerIsPaused
+                                                      return CustomPaint(
+                                                          painter: TimerPainter(
+                                                        animation: controller,
+                                                        backgroundColor:
+                                                            Colors.grey,
+                                                        color: timerIsPaused
+                                                            ? Colors.black45
+                                                            : Colors.blue,
+                                                      ));
+                                                    },
+                                                  ))),
+                                          Align(
+                                            alignment: FractionalOffset.center,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: <Widget>[
+                                                AnimatedBuilder(
+                                                    animation: controller,
+                                                    builder:
+                                                        (BuildContext context,
+                                                            Widget child) {
+                                                      return Column(
+                                                        children: <Widget>[
+                                                          Text(timeLeft,
+                                                              style: TextStyle(
+                                                                  fontSize: 90,
+                                                                  color: Colors
+                                                                      .black54,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w300)),
+                                                          !timerIsPaused
+                                                              ? Text(
+                                                                  'Timer is running',
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .blue,
+                                                                      fontSize:
+                                                                          18.0))
+                                                              : timerIsOn
                                                                   ? Text(
-                                                                      'Timer is running',
+                                                                      'PAUSED',
                                                                       style: TextStyle(
                                                                           color: Colors
-                                                                              .blue,
+                                                                              .grey,
                                                                           fontSize:
                                                                               18.0))
-                                                                  : timerIsOn
-                                                                      ? Text(
-                                                                          'PAUSED',
-                                                                          style: TextStyle(
-                                                                              color: Colors.grey,
-                                                                              fontSize: 18.0))
-                                                                      : Text(
-                                                                          'STOPPED',
-                                                                          style: TextStyle(
-                                                                              color: Colors.grey,
-                                                                              fontSize: 18.0)),
-                                                            ],
-                                                          );
-                                                        }),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ))))),
-                          Container(
-                            margin: EdgeInsets.all(50.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                new Builder(builder: (BuildContext context) {
-                                  return new FloatingActionButton(
-                                    heroTag: 'playButton',
-                                    child: AnimatedBuilder(
-                                      animation: controller,
-                                      builder:
-                                          (BuildContext context, Widget child) {
-                                        return Icon(!timerIsPaused
-                                            ? Icons.pause
-                                            : Icons.play_arrow);
-                                      },
-                                    ),
-                                    onPressed: () {
-                                      if (controller.isAnimating) {
-                                        pauseTimer();
-                                      } else {
-                                        timer = startTimer();
-                                      }
-                                    },
-                                  );
-                                }),
-                                timerIsPaused
-                                    ? FloatingActionButton(
-                                        child: timerIsOn
-                                            ? Icon(Icons.replay)
-                                            : Icon(Icons.arrow_back),
-                                        heroTag: 'resetButton',
-                                        tooltip: 'Reset timer',
-                                        onPressed: resetTimer)
-                                    : Container()
-                              ],
-                            ),
-                          ),
-                        ],
-                      )),
-                ],
-              );
+                                                                  : Text(
+                                                                      'STOPPED',
+                                                                      style: TextStyle(
+                                                                          color: Colors
+                                                                              .grey,
+                                                                          fontSize:
+                                                                              18.0)),
+                                                        ],
+                                                      );
+                                                    }),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ))))),
+                      Container(
+                        margin: EdgeInsets.all(50.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            new Builder(builder: (BuildContext context) {
+                              return new FloatingActionButton(
+                                heroTag: 'playButton',
+                                child: AnimatedBuilder(
+                                  animation: controller,
+                                  builder:
+                                      (BuildContext context, Widget child) {
+                                    return Icon(!timerIsPaused
+                                        ? Icons.pause
+                                        : Icons.play_arrow);
+                                  },
+                                ),
+                                onPressed: () {
+                                  if (controller.isAnimating) {
+                                    pauseTimer();
+                                  } else {
+                                    timer = startTimer();
+                                  }
+                                },
+                              );
+                            }),
+                            timerIsPaused
+                                ? FloatingActionButton(
+                                    child: timerIsOn
+                                        ? Icon(Icons.replay)
+                                        : Icon(Icons.arrow_back),
+                                    heroTag: 'resetButton',
+                                    tooltip: 'Reset timer',
+                                    onPressed: resetTimer)
+                                : Container()
+                          ],
+                        ),
+                      ),
+                    ],
+                  ));
             })));
   }
 
@@ -239,14 +235,15 @@ class _TimerCountDownState extends State<TimerCountDown>
   resetTimer() {
     if (timerIsOn) {
       print('timer reset');
-      showSnackBar('Timer was reset', 1250);
       timer.cancel();
-      controller.value = 1;
       setState(() {
         timerIsOn = false;
         timerPausedValue = null;
         timerIsPaused = true;
       });
+      showSnackBar('Timer was reset', 1250);
+      controller.animateTo(1,
+          duration: Duration(milliseconds: 150), curve: Curves.easeInOut);
     } else {
       Navigator.of(context).pop();
     }
@@ -254,7 +251,7 @@ class _TimerCountDownState extends State<TimerCountDown>
 
   showSnackBar(String text, milliseconds) {
     Scaffold.of(scaffoldContext).showSnackBar(new SnackBar(
-      backgroundColor: Colors.blue,
+      backgroundColor: timerIsOn ? Colors.blue : Colors.blueGrey,
       duration: Duration(milliseconds: milliseconds),
       content: new Text(
         text,
@@ -269,6 +266,8 @@ class _TimerCountDownState extends State<TimerCountDown>
         context: context,
         barrierDismissible: false,
         builder: ((_) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(15.0))),
               title: new Text(
                 'Timer run out !',
                 textAlign: TextAlign.center,
@@ -321,17 +320,28 @@ class _TimerCountDownState extends State<TimerCountDown>
             context: context,
             barrierDismissible: false,
             builder: ((_) => AlertDialog(
-                  title: Text(
-                    'Timer is running',
-                    textAlign: TextAlign.center,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(15.0))),
+                  title: Row(
+                    children: <Widget>[
+                      Icon(Icons.error_outline),
+                      SizedBox(width: 10),
+                      Text(
+                        'Timer is running!',
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                   content: Text(
                     'Do you want to stop it?',
                   ),
                   actions: <Widget>[
                     new FlatButton(
-                        onPressed: () =>
-                            {answer = true, Navigator.of(context).pop()},
+                        onPressed: () => {
+                              answer = false,
+                              Navigator.of(context).pop(),
+                              Navigator.pop(context, {'timerCancelled': 1})
+                            },
                         child: new Text('Okay')),
                     new FlatButton(
                         onPressed: () =>
