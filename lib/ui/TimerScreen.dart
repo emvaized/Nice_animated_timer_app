@@ -101,8 +101,6 @@ class _TimerCountDownState extends State<TimerCountDown>
                                             child: Column(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.spaceEvenly,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
                                               children: <Widget>[
                                                 AnimatedBuilder(
                                                     animation: controller,
