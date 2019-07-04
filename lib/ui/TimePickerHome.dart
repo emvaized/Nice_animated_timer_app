@@ -43,7 +43,7 @@ class TimePickerState extends State<TimePicker> with TickerProviderStateMixin {
     super.initState();
     controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 400),
+      duration: Duration(milliseconds: 600),
     );
     animation = Tween(begin: 0.0, end: 1.0)
         .chain(new CurveTween(
