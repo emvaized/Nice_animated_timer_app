@@ -80,6 +80,39 @@ class TimePickerState extends State<TimePicker> with TickerProviderStateMixin {
             ],
           ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton:  Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              ScaleTransition(
+                scale: animation,
+                child: new FloatingActionButton(
+                  heroTag: 'playButton',
+                  child: Icon(Icons.play_arrow),
+                  onPressed: () {
+                    if (timerValue.inHours == 0 &&
+                        timerValue.inMinutes == 0 &&
+                        timerValue.inSeconds == 0) {
+                      showSnackBar('Timer must not be null');
+                    } else {
+                      startTimer();
+                    }
+                  },
+                ),
+              ),
+              ScaleTransition(
+                scale: animation,
+                child: FloatingActionButton(
+                    heroTag: 'resetButton',
+                    tooltip: 'Show history',
+                    child: Icon(Icons.history),
+                    onPressed: () => goToHistoryScreen(context)),
+              )
+            ],
+          ),
+        ),
         body: Builder(builder: (BuildContext context) {
           scaffoldContext = context;
           controller.forward();
@@ -99,39 +132,6 @@ class TimePickerState extends State<TimePicker> with TickerProviderStateMixin {
                       ),
                     ),
                   ),
-                  Container(
-                    margin: EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        new Builder(builder: (BuildContext context) {
-                          return new FloatingActionButton(
-                            heroTag: 'playButton',
-                            child: AnimatedBuilder(
-                              animation: controller,
-                              builder: (BuildContext context, Widget child) {
-                                return Icon(Icons.play_arrow);
-                              },
-                            ),
-                            onPressed: () {
-                              if (timerValue.inHours == 0 &&
-                                  timerValue.inMinutes == 0 &&
-                                  timerValue.inSeconds == 0) {
-                                showSnackBar('Timer must not be null');
-                              } else {
-                                startTimer();
-                              }
-                            },
-                          );
-                        }),
-                        FloatingActionButton(
-                            heroTag: 'resetButton',
-                            tooltip: 'Show history',
-                            child: Icon(Icons.history),
-                            onPressed: () => goToHistoryScreen(context))
-                      ],
-                    ),
-                  )
                 ],
               ),
             ),
@@ -165,15 +165,19 @@ class TimePickerState extends State<TimePicker> with TickerProviderStateMixin {
 
   startTimer() async {
     lastTimers.add(timerValue.toString().split('.')[0]);
-    Map results = await Navigator.of(context)
+//    Map results = await Navigator.of(context)
+//        .push(new MaterialPageRoute<Map>(builder: (BuildContext context) {
+//      return new TimerCountDown(timerValue: timerValue);
+//    }));
+//
+//    if (results != null && results.containsKey('timerCancelled'))
+//      Future.delayed(Duration(milliseconds: 350)).then((context) {
+//        showSnackBar('Timer cancelled');
+//      });
+    Navigator.of(context)
         .push(new MaterialPageRoute<Map>(builder: (BuildContext context) {
       return new TimerCountDown(timerValue: timerValue);
     }));
-
-    if (results != null && results.containsKey('timerCancelled'))
-      Future.delayed(Duration(milliseconds: 350)).then((context) {
-        showSnackBar('Timer cancelled');
-      });
   }
 
   showSnackBar(String text) {

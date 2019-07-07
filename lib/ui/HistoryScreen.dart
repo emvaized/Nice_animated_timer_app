@@ -9,7 +9,7 @@ class HistoryScreen extends StatefulWidget {
   _HistoryScreen2State createState() => _HistoryScreen2State();
 }
 
-class _HistoryScreen2State extends State<HistoryScreen> {
+class _HistoryScreen2State extends State<HistoryScreen> with TickerProviderStateMixin{
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -18,6 +18,7 @@ class _HistoryScreen2State extends State<HistoryScreen> {
         return false;
       },
       child: Hero(
+        transitionOnUserGestures: true,
         tag: 'resetButton',
         child: new Scaffold(
             appBar: new AppBar(
@@ -26,6 +27,7 @@ class _HistoryScreen2State extends State<HistoryScreen> {
               actions: <Widget>[
                 IconButton(
                   icon: Icon(Icons.clear_all),
+                  tooltip: 'Clear all',
                   onPressed: () {
                     setState(() {
                       widget.lastTimers = [];
@@ -36,24 +38,34 @@ class _HistoryScreen2State extends State<HistoryScreen> {
             ),
             body: widget.lastTimers.length == 0
                 ? Center(
-                    child: FittedBox(
-                      child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Icon(
-                          Icons.format_list_bulleted,
-                          size: 45,
+                    child: FadeTransition(
+                      opacity:  Tween<double>(begin: 0.0, end: 1.0).chain(
+                        CurveTween(
+                          curve: Curves.easeIn,
                         ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Text(
-                          'No history yet',
-                          style: TextStyle(fontSize: 21, color: Colors.black87),
-                        ),
-                      ],
+                      ).animate(AnimationController(
+                        vsync: this,
+                        duration: Duration(milliseconds: 200),
+                      )..forward()),
+                      child: FittedBox(
+                        child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Icon(
+                            Icons.format_list_bulleted,
+                            size: 45,
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Text(
+                            'No history yet',
+                            style: TextStyle(fontSize: 21, color: Colors.black87),
+                          ),
+                        ],
                   ),
+                      ),
                     ))
                 : Scrollbar(
                     child: AnimatedList(

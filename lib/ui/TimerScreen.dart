@@ -15,12 +15,14 @@ class TimerCountDown extends StatefulWidget {
 class _TimerCountDownState extends State<TimerCountDown>
     with TickerProviderStateMixin {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-  AnimationController controller;
+  AnimationController controller, playButtonController;
   bool timerIsPaused = false;
   bool timerIsOn = true;
   Timer timer;
   Duration timerPausedValue;
   BuildContext scaffoldContext;
+
+  Animation resetButtonAnimation;
 
   @override
   void initState() {
@@ -35,6 +37,10 @@ class _TimerCountDownState extends State<TimerCountDown>
     controller = AnimationController(
       vsync: this,
       duration: widget.timerValue,
+    );
+    playButtonController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 150),
     );
     timer = startTimer();
   }
@@ -58,117 +64,124 @@ class _TimerCountDownState extends State<TimerCountDown>
             ),
             body: Builder(builder: (BuildContext context) {
               scaffoldContext = context;
-              return Padding(
-                  padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 60.0, bottom: 15.0, ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Expanded(
-                          child: Align(
-                              alignment: FractionalOffset.center,
-                              child: AspectRatio(
-                                  aspectRatio: 1.0,
-                                  child: Hero(
-                                    tag: 'showTimer',
-                                      flightShuttleBuilder: (
-                                          BuildContext flightContext,
-                                          Animation<double> animation,
-                                          HeroFlightDirection flightDirection,
-                                          BuildContext fromHeroContext,
-                                          BuildContext toHeroContext,
-                                          ) {
-                                        final Hero toHero = toHeroContext.widget;
-
-                                        if(flightDirection == HeroFlightDirection.push) {
-                                          return ScaleTransition(
-                                            scale: animation.drive(
-                                              Tween<double>(begin: 0.7, end: 1.0).chain(
-                                                CurveTween(
-                                                  curve: Curves.easeIn,
-                                                ),
-                                              ),
-                                            ),
-                                            child: toHero.child,
-                                          );
-                                        } else if (flightDirection == HeroFlightDirection.pop){
-                                          return ScaleTransition(
-                                            scale: animation.drive(
-                                              Tween<double>(begin: 1.0, end: 1.0).chain(
-                                                CurveTween(
-                                                  curve: Curves.easeIn,
-                                                ),
-                                              ),
-                                            ),
-                                            child: toHero.child,
-                                          );
-                                        }
-                                      },
-                                    child: Material(
-                                      child: InkWell(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(200)),
-                                          onTap: () {
-                                            if (timerIsPaused) {
-                                              timer = startTimer();
-                                            } else {
-                                              pauseTimer();
-                                            }
-                                          },
-                                          child: Stack(
-                                            children: <Widget>[
-                                              new ProgressAnimatedCircle(
-                                                  controller: controller,
-                                                  timerIsPaused: timerIsPaused),
-                                              new TimerCountText(
-                                                  timerValue: widget.timerValue,
-                                                  controller: controller,
-                                                  timerIsPaused: timerIsPaused,
-                                                  timerIsOn: timerIsOn),
-                                            ],
-                                          )),
-                                    ),
-                                  )))),
-                      Container(
-                        margin: EdgeInsets.all(50.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            new Builder(builder: (BuildContext context) {
-                              return new FloatingActionButton(
-                                heroTag: 'playButton',
-                                child: AnimatedBuilder(
-                                  animation: controller,
-                                  builder:
-                                      (BuildContext context, Widget child) {
-                                    return Icon(!timerIsPaused
-                                        ? Icons.pause
-                                        : Icons.play_arrow);
-                                  },
-                                ),
-                                onPressed: () {
-                                  if (controller.isAnimating) {
-                                    pauseTimer();
-                                  } else {
-                                    timer = startTimer();
-                                  }
-                                },
-                              );
-                            }),
-                            timerIsPaused
-                                ? FloatingActionButton(
-                                    child: timerIsOn
-                                        ? Icon(Icons.replay)
-                                        : Icon(Icons.arrow_back),
-                                    heroTag: 'resetButton',
-                                    tooltip: 'Reset timer',
-                                    onPressed: resetTimer)
-                                : Container()
-                          ],
-                        ),
-                      ),
-                    ],
-                  ));
+              return buildPage();
             })));
+  }
+
+  Widget buildPage() {
+    return Scaffold(
+      floatingActionButton: timerIsPaused
+          ? Padding(
+              padding: const EdgeInsets.all(50.0),
+              child: FloatingActionButton(
+                  isExtended: true,
+                  child: timerIsOn ? Icon(Icons.replay) : Icon(Icons.arrow_back),
+                  heroTag: 'resetButton',
+                  tooltip: timerIsOn ? 'Reset timer' : 'Go back',
+                  onPressed: resetTimer))
+          : null,
+      body: Padding(
+          padding: EdgeInsets.only(
+            left: 15.0,
+            right: 15.0,
+            top: 60.0,
+            bottom: 15.0,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Expanded(
+                  child: Align(
+                      alignment: FractionalOffset.center,
+                      child: AspectRatio(
+                          aspectRatio: 1.0,
+                          child: Hero(
+                            tag: 'showTimer',
+                            flightShuttleBuilder: (
+                              BuildContext flightContext,
+                              Animation<double> animation,
+                              HeroFlightDirection flightDirection,
+                              BuildContext fromHeroContext,
+                              BuildContext toHeroContext,
+                            ) {
+                              final Hero toHero = toHeroContext.widget;
+
+                              if (flightDirection == HeroFlightDirection.push) {
+                                return ScaleTransition(
+                                  scale: animation.drive(
+                                    Tween<double>(begin: 0.5, end: 1.0).chain(
+                                      CurveTween(
+                                        curve: Curves.easeIn,
+                                      ),
+                                    ),
+                                  ),
+                                  child: toHero.child,
+                                );
+                              } else if (flightDirection ==
+                                  HeroFlightDirection.pop) {
+                                return ScaleTransition(
+                                  scale: animation.drive(
+                                    Tween<double>(begin: 1.0, end: 1.0).chain(
+                                      CurveTween(
+                                        curve: Curves.easeIn,
+                                      ),
+                                    ),
+                                  ),
+                                  child: toHero.child,
+                                );
+                              }
+                            },
+                            child: Material(
+                              child: InkWell(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(200)),
+                                  onTap: () {
+                                    if (timerIsPaused) {
+                                      timer = startTimer();
+                                    } else {
+                                      pauseTimer();
+                                    }
+                                  },
+                                  child: Stack(
+                                    children: <Widget>[
+                                      new ProgressAnimatedCircle(
+                                          controller: controller,
+                                          timerIsPaused: timerIsPaused),
+                                      new TimerCountText(
+                                          timerValue: widget.timerValue,
+                                          controller: controller,
+                                          timerIsPaused: timerIsPaused,
+                                          timerIsOn: timerIsOn),
+                                    ],
+                                  )),
+                            ),
+                          )))),
+              Container(
+                margin: EdgeInsets.all(50.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    new Builder(builder: (BuildContext context) {
+                      return new FloatingActionButton(
+                        heroTag: 'playButton',
+                        child: AnimatedIcon(
+                                icon: AnimatedIcons.pause_play,
+                                progress: playButtonController),
+                        onPressed: () {
+                          if (controller.isAnimating) {
+                            pauseTimer();
+                          } else {
+                            timer = startTimer();
+                          }
+                        },
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ],
+          )),
+    );
   }
 
   startTimer() {
@@ -190,6 +203,7 @@ class _TimerCountDownState extends State<TimerCountDown>
       timerIsPaused = false;
       timerIsOn = true;
     });
+    playButtonController.reverse();
     return timerPausedValue != null
         ? new Timer(timerPausedValue, () => {showAlertOnFinish()})
         : new Timer(widget.timerValue, () => {showAlertOnFinish()});
@@ -203,6 +217,7 @@ class _TimerCountDownState extends State<TimerCountDown>
       timerPausedValue = controller.duration * controller.value;
     });
     timer.cancel();
+    playButtonController.forward();
   }
 
   resetTimer() {
@@ -308,7 +323,8 @@ class _TimerCountDownState extends State<TimerCountDown>
                         onPressed: () => {
                               answer = false,
                               Navigator.of(context).pop(),
-                              Navigator.pop(context, {'timerCancelled': 1})
+                              Navigator.of(context).pop(),
+                             //  Navigator.pop(context, {'timerCancelled': 1})
                             },
                         child: new Text('Okay')),
                     new FlatButton(
@@ -335,16 +351,16 @@ class ProgressAnimatedCircle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned.fill(
         child: AnimatedBuilder(
+      animation: controller,
+      builder: (BuildContext context, Widget child) {
+        return CustomPaint(
+            painter: TimerPainter(
           animation: controller,
-          builder: (BuildContext context, Widget child) {
-            return CustomPaint(
-                painter: TimerPainter(
-              animation: controller,
-              backgroundColor: Colors.grey,
-              color: timerIsPaused ? Colors.black45 : Colors.blue,
-            ));
-          },
+          backgroundColor: Colors.grey,
+          color: timerIsPaused ? Colors.black45 : Colors.blue,
         ));
+      },
+    ));
   }
 }
 
