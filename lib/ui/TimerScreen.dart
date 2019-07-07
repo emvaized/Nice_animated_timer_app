@@ -53,101 +53,81 @@ class _TimerCountDownState extends State<TimerCountDown>
         onWillPop: () async =>
             timerIsOn ? await showWarningOnTimerRunning() : true,
         child: Scaffold(
-            appBar: AppBar(),
+            appBar: AppBar(
+              title: Text('Timer'),
+            ),
             body: Builder(builder: (BuildContext context) {
               scaffoldContext = context;
               return Padding(
-                  padding: EdgeInsets.all(15.0),
+                  padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 60.0, bottom: 15.0, ),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       Expanded(
                           child: Align(
                               alignment: FractionalOffset.center,
                               child: AspectRatio(
                                   aspectRatio: 1.0,
-                                  child: InkWell(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(200)),
-                                      onTap: () {
-                                        if (timerIsPaused) {
-                                          timer = startTimer();
-                                        } else {
-                                          pauseTimer();
+                                  child: Hero(
+                                    tag: 'showTimer',
+                                      flightShuttleBuilder: (
+                                          BuildContext flightContext,
+                                          Animation<double> animation,
+                                          HeroFlightDirection flightDirection,
+                                          BuildContext fromHeroContext,
+                                          BuildContext toHeroContext,
+                                          ) {
+                                        final Hero toHero = toHeroContext.widget;
+
+                                        if(flightDirection == HeroFlightDirection.push) {
+                                          return ScaleTransition(
+                                            scale: animation.drive(
+                                              Tween<double>(begin: 0.7, end: 1.0).chain(
+                                                CurveTween(
+                                                  curve: Curves.easeIn,
+                                                ),
+                                              ),
+                                            ),
+                                            child: toHero.child,
+                                          );
+                                        } else if (flightDirection == HeroFlightDirection.pop){
+                                          return ScaleTransition(
+                                            scale: animation.drive(
+                                              Tween<double>(begin: 1.0, end: 1.0).chain(
+                                                CurveTween(
+                                                  curve: Curves.easeIn,
+                                                ),
+                                              ),
+                                            ),
+                                            child: toHero.child,
+                                          );
                                         }
                                       },
-                                      child: Stack(
-                                        children: <Widget>[
-                                          Positioned.fill(
-                                              child: Hero(
-                                                  tag: 'showTimer',
-                                                  child: AnimatedBuilder(
-                                                    animation: controller,
-                                                    builder:
-                                                        (BuildContext context,
-                                                            Widget child) {
-                                                      return CustomPaint(
-                                                          painter: TimerPainter(
-                                                        animation: controller,
-                                                        backgroundColor:
-                                                            Colors.grey,
-                                                        color: timerIsPaused
-                                                            ? Colors.black45
-                                                            : Colors.blue,
-                                                      ));
-                                                    },
-                                                  ))),
-                                          Align(
-                                            alignment: FractionalOffset.center,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: <Widget>[
-                                                AnimatedBuilder(
-                                                    animation: controller,
-                                                    builder:
-                                                        (BuildContext context,
-                                                            Widget child) {
-                                                      return Column(
-                                                        children: <Widget>[
-                                                          Text(timeLeft,
-                                                              style: TextStyle(
-                                                                  fontSize: 90,
-                                                                  color: Colors
-                                                                      .black54,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w300)),
-                                                          !timerIsPaused
-                                                              ? Text(
-                                                                  'Timer is running',
-                                                                  style: TextStyle(
-                                                                      color: Colors
-                                                                          .blue,
-                                                                      fontSize:
-                                                                          18.0))
-                                                              : timerIsOn
-                                                                  ? Text(
-                                                                      'PAUSED',
-                                                                      style: TextStyle(
-                                                                          color: Colors
-                                                                              .grey,
-                                                                          fontSize:
-                                                                              18.0))
-                                                                  : Text(
-                                                                      'STOPPED',
-                                                                      style: TextStyle(
-                                                                          color: Colors
-                                                                              .grey,
-                                                                          fontSize:
-                                                                              18.0)),
-                                                        ],
-                                                      );
-                                                    }),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ))))),
+                                    child: Material(
+                                      child: InkWell(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(200)),
+                                          onTap: () {
+                                            if (timerIsPaused) {
+                                              timer = startTimer();
+                                            } else {
+                                              pauseTimer();
+                                            }
+                                          },
+                                          child: Stack(
+                                            children: <Widget>[
+                                              new ProgressAnimatedCircle(
+                                                  controller: controller,
+                                                  timerIsPaused: timerIsPaused),
+                                              new TimerCountText(
+                                                  timerValue: widget.timerValue,
+                                                  controller: controller,
+                                                  timerIsPaused: timerIsPaused,
+                                                  timerIsOn: timerIsOn),
+                                            ],
+                                          )),
+                                    ),
+                                  )))),
                       Container(
                         margin: EdgeInsets.all(50.0),
                         child: Row(
@@ -189,11 +169,6 @@ class _TimerCountDownState extends State<TimerCountDown>
                     ],
                   ));
             })));
-  }
-
-  String get timeLeft {
-    Duration duration = widget.timerValue * controller.value;
-    return '${duration.inHours}:${duration.inMinutes % 60}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
   }
 
   startTimer() {
@@ -266,17 +241,11 @@ class _TimerCountDownState extends State<TimerCountDown>
         builder: ((_) => AlertDialog(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(15.0))),
-              title: new Text(
+              title: Text(
                 'Timer run out !',
                 textAlign: TextAlign.center,
               ),
-              content: new Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(Icons.timer, size: 100, color: Colors.blueGrey)
-                ],
-              ),
+              content: Icon(Icons.timer, size: 100, color: Colors.blueGrey),
               actions: <Widget>[
                 new FlatButton(
                     onPressed: () => {
@@ -286,6 +255,7 @@ class _TimerCountDownState extends State<TimerCountDown>
                             timerPausedValue = null;
                             timerIsPaused = true;
                           }),
+                          Navigator.of(context).pop(),
                           Navigator.of(context).pop()
                         },
                     child: new Text('Okay')),
@@ -323,7 +293,7 @@ class _TimerCountDownState extends State<TimerCountDown>
                   title: Row(
                     children: <Widget>[
                       Icon(Icons.error_outline),
-                      SizedBox(width: 10),
+                      SizedBox(width: 30),
                       Text(
                         'Timer is running!',
                         textAlign: TextAlign.center,
@@ -348,5 +318,88 @@ class _TimerCountDownState extends State<TimerCountDown>
                   ],
                 )))
         .then((value) => answer);
+  }
+}
+
+class ProgressAnimatedCircle extends StatelessWidget {
+  const ProgressAnimatedCircle({
+    Key key,
+    @required this.controller,
+    @required this.timerIsPaused,
+  }) : super(key: key);
+
+  final AnimationController controller;
+  final bool timerIsPaused;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned.fill(
+        child: AnimatedBuilder(
+          animation: controller,
+          builder: (BuildContext context, Widget child) {
+            return CustomPaint(
+                painter: TimerPainter(
+              animation: controller,
+              backgroundColor: Colors.grey,
+              color: timerIsPaused ? Colors.black45 : Colors.blue,
+            ));
+          },
+        ));
+  }
+}
+
+class TimerCountText extends StatelessWidget {
+  const TimerCountText({
+    Key key,
+    @required this.controller,
+    @required this.timerIsPaused,
+    @required this.timerIsOn,
+    @required this.timerValue,
+  }) : super(key: key);
+
+  final AnimationController controller;
+  final bool timerIsPaused;
+  final bool timerIsOn;
+  final timerValue;
+
+  String get timeLeft {
+    Duration duration = timerValue * controller.value;
+    return '${duration.inHours}:${duration.inMinutes % 60}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: FractionalOffset.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          AnimatedBuilder(
+              animation: controller,
+              builder: (BuildContext context, Widget child) {
+                return Column(
+                  children: <Widget>[
+                    Text(timeLeft,
+                        style: TextStyle(
+                            fontSize: 90,
+                            color: Colors.black54,
+                            fontWeight: FontWeight.w300)),
+                    !timerIsPaused
+                        ? Text('Timer is running',
+                            style:
+                                TextStyle(color: Colors.blue, fontSize: 18.0))
+                        : timerIsOn
+                            ? Text('PAUSED',
+                                style: TextStyle(
+                                    color: Colors.grey, fontSize: 18.0))
+                            : Text('STOPPED',
+                                style: TextStyle(
+                                    color: Colors.grey, fontSize: 18.0)),
+                  ],
+                );
+              }),
+        ],
+      ),
+    );
   }
 }

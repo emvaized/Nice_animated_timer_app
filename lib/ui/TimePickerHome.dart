@@ -17,12 +17,10 @@ class TimePickerState extends State<TimePicker> with TickerProviderStateMixin {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   AnimationController controller;
   Animation animation;
-  Duration timerValue = Duration(hours: 0, minutes: 1, seconds: 0);
-  Duration timerPausedValue;
-  Timer timer;
-  Timer initialOpacityTimer;
-  bool timerIsOn = false;
-  bool timerIsPaused = true;
+  Duration timerValue = Duration(hours: 0, minutes: 1, seconds: 0),
+      timerPausedValue;
+  Timer timer, initialOpacityTimer;
+  bool timerIsOn = false, timerIsPaused = true;
   List lastTimers = [];
 
   String get timeLeft {
@@ -43,7 +41,7 @@ class TimePickerState extends State<TimePicker> with TickerProviderStateMixin {
     super.initState();
     controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 400),
+      duration: Duration(milliseconds: 600),
     );
     animation = Tween(begin: 0.0, end: 1.0)
         .chain(new CurveTween(
@@ -192,21 +190,24 @@ class TimePickerState extends State<TimePicker> with TickerProviderStateMixin {
   Future goToHistoryScreen(BuildContext context) async {
     Map results = await Navigator.of(context)
         .push(new MaterialPageRoute<Map>(builder: (BuildContext context) {
-      return new HistoryScreen(
-          lastTimers: lastTimers.length > 10
-              ? lastTimers.reversed.toList().sublist(0, 10)
-              : lastTimers.reversed.toList());
+      return new HistoryScreen(lastTimers: lastTimers.reversed.toList());
     }));
 
-    if (results != null && results.containsKey('timer')) {
-      setState(() {
-        timerValue = results['timer'];
-        controller = AnimationController(
-          vsync: this,
-          duration: timerValue,
-        );
-      });
-      startTimer();
+    if (results != null) {
+      if (results.containsKey('timer')) {
+        setState(() {
+          timerValue = results['timer'];
+          controller = AnimationController(
+            vsync: this,
+            duration: timerValue,
+          );
+        });
+        startTimer();
+      }
+
+      if (results.containsKey('newLastTimersList')) {
+        lastTimers = results['newLastTimersList'];
+      }
     }
   }
 }
