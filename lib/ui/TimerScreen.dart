@@ -22,8 +22,6 @@ class _TimerCountDownState extends State<TimerCountDown>
   Duration timerPausedValue;
   BuildContext scaffoldContext;
 
-  Animation resetButtonAnimation;
-
   @override
   void initState() {
     super.initState();
@@ -74,8 +72,8 @@ class _TimerCountDownState extends State<TimerCountDown>
           ? Padding(
               padding: const EdgeInsets.all(50.0),
               child: FloatingActionButton(
-                  isExtended: true,
-                  child: timerIsOn ? Icon(Icons.replay) : Icon(Icons.arrow_back),
+                  child:
+                      timerIsOn ? Icon(Icons.replay) : Icon(Icons.arrow_back),
                   heroTag: 'resetButton',
                   tooltip: timerIsOn ? 'Reset timer' : 'Go back',
                   onPressed: resetTimer))
@@ -165,8 +163,8 @@ class _TimerCountDownState extends State<TimerCountDown>
                       return new FloatingActionButton(
                         heroTag: 'playButton',
                         child: AnimatedIcon(
-                                icon: AnimatedIcons.pause_play,
-                                progress: playButtonController),
+                            icon: AnimatedIcons.pause_play,
+                            progress: playButtonController),
                         onPressed: () {
                           if (controller.isAnimating) {
                             pauseTimer();
@@ -222,6 +220,9 @@ class _TimerCountDownState extends State<TimerCountDown>
 
   resetTimer() {
     if (timerIsOn) {
+      showSnackBar('Timer was reset', 1250);
+      controller.animateTo(1,
+          duration: Duration(milliseconds: 150), curve: Curves.easeInOut);
       print('timer reset');
       timer.cancel();
       setState(() {
@@ -229,9 +230,6 @@ class _TimerCountDownState extends State<TimerCountDown>
         timerPausedValue = null;
         timerIsPaused = true;
       });
-      showSnackBar('Timer was reset', 1250);
-      controller.animateTo(1,
-          duration: Duration(milliseconds: 150), curve: Curves.easeInOut);
     } else {
       Navigator.of(context).pop();
     }
@@ -324,7 +322,7 @@ class _TimerCountDownState extends State<TimerCountDown>
                               answer = false,
                               Navigator.of(context).pop(),
                               Navigator.of(context).pop(),
-                             //  Navigator.pop(context, {'timerCancelled': 1})
+                              //  Navigator.pop(context, {'timerCancelled': 1})
                             },
                         child: new Text('Okay')),
                     new FlatButton(
