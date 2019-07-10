@@ -38,7 +38,6 @@ class TimePickerState extends State<TimePicker> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    super.initState();
     controller = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 600),
@@ -55,13 +54,14 @@ class TimePickerState extends State<TimePicker> with TickerProviderStateMixin {
         initializationSettingsAndroid, initializationSettingsIOS);
     flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    super.initState();
   }
 
   @override
   void dispose() {
-    super.dispose();
     initialOpacityTimer.cancel();
     controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -69,13 +69,14 @@ class TimePickerState extends State<TimePicker> with TickerProviderStateMixin {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
+          elevation: 2,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Icon(Icons.timer, color: Colors.black),
+              Icon(Icons.timer, color: Colors.black87),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text('Timer', style: TextStyle(color: Colors.black)),
+                child: Text('Timer App', style: TextStyle(color: Colors.black87)),
               ),
             ],
           ),

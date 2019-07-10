@@ -12,6 +12,8 @@ class TimerCountDown extends StatefulWidget {
   _TimerCountDownState createState() => _TimerCountDownState();
 }
 
+
+
 class _TimerCountDownState extends State<TimerCountDown>
     with TickerProviderStateMixin {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
@@ -24,7 +26,6 @@ class _TimerCountDownState extends State<TimerCountDown>
 
   @override
   void initState() {
-    super.initState();
     var initializationSettingsAndroid =
         new AndroidInitializationSettings('@mipmap/ic_launcher');
     var initializationSettingsIOS = new IOSInitializationSettings();
@@ -41,7 +42,9 @@ class _TimerCountDownState extends State<TimerCountDown>
       duration: Duration(milliseconds: 150),
     );
     timer = startTimer();
+    super.initState();
   }
+
 
   @override
   void dispose() {
@@ -58,13 +61,15 @@ class _TimerCountDownState extends State<TimerCountDown>
             timerIsOn ? await showWarningOnTimerRunning() : true,
         child: Scaffold(
             appBar: AppBar(
-              title: Text('Timer'),
+              //title: Text('Timer'),
             ),
             body: Builder(builder: (BuildContext context) {
               scaffoldContext = context;
               return buildPage();
             })));
   }
+
+
 
   Widget buildPage() {
     return Scaffold(
